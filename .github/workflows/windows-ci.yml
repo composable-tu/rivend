@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test-windows:
+  windows-ci-x64:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -21,7 +21,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           cache: 'pnpm'
 
       - name: Install Rust
@@ -50,3 +50,14 @@ jobs:
       - name: Run lint
         run: pnpm tauri lint
         continue-on-error: true
+
+      - name: Upload Tauri app artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-app-bundle
+          path: |
+            src-tauri/target/release/bundle/msi/*
+            src-tauri/target/release/bundle/app/*
+            src-tauri/target/release/bundle/appimage/*
+            src-tauri/target/release/bundle/deb/*
+          if-no-files-found: warn
